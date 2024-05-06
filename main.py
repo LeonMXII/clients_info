@@ -68,15 +68,15 @@ def delete_client(conn, id):
 def find_client(conn, name='%', last_name='%', email='%'):
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT * FROM client WHERE name=%s;
+            SELECT * FROM client WHERE name LIKE %s;
         """, (name,))
         print(cur.fetchone())
         cur.execute("""
-            SELECT * FROM client WHERE last_name=%s;
+            SELECT * FROM client WHERE last_name LIKE %s;
         """, (last_name,))
         print(cur.fetchone())
         cur.execute("""
-            SELECT * FROM client WHERE email=%s;
+            SELECT * FROM client WHERE email LIKE %s;
         """, (email,))
         print(cur.fetchone())
 
@@ -88,9 +88,9 @@ if __name__ == '__main__':
         add_phone_number(conn, 1,'+15554447876', 1)
         change_client(conn, 2, 'Elon', 'Musk', 'ElonMusk@gmail.com')
         add_phone_number(conn, 2, '+15556667777', 2)
-        delete_phone_number(conn, 1, '+15554447876')
-        delete_client(conn,2)
-        find_client(conn, name='Mark')
+        # delete_phone_number(conn, 1, '+15554447876')
+        # delete_client(conn,2)
+        find_client(conn, 'Mark', 'Musk', 'MarkZucker@gmail.com')
 conn.close()
 
 
