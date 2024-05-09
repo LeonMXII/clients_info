@@ -1,4 +1,8 @@
 import psycopg2
+import os
+
+user = os.getenv('user')
+password = os.getenv('password')
 
 def create_db(conn):
     with conn.cursor() as cur:
@@ -65,23 +69,18 @@ def delete_client(conn, id):
         """, (id,))
         conn.commit()
 
-def find_client(conn, name='%', last_name='%', email='%'):
+def find_client(conn, name='%', last_name='%', email='%', phone_number='%'):
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT * FROM client WHERE name LIKE %s;
-        """, (name,))
-        print(cur.fetchone())
-        cur.execute("""
-            SELECT * FROM client WHERE last_name LIKE %s;
-        """, (last_name,))
-        print(cur.fetchone())
-        cur.execute("""
-            SELECT * FROM client WHERE email LIKE %s;
-        """, (email,))
+            SELECT * FROM client 
+            LEFT JOIN phone ON client_id = phone.client_id
+            WHERE name LIKE %s AND last_name LIKE %s AND email LIKE %s AND phone_number LIKE %s
+            """, (name, last_name, email, phone_number))
         print(cur.fetchone())
 
+
 if __name__ == '__main__':
-    with psycopg2.connect(database='clients', user='postgres', password='pass') as conn:
+    with psycopg2.connect(database='clients', user=user, password=password) as conn:
         create_db(conn)
         add_clint(conn, 1, 'Mark', 'Zuckerberg', 'MarkZucker@gmail.com')
         add_clint(conn, 2, '4 ', '5', '6')
@@ -90,7 +89,8 @@ if __name__ == '__main__':
         add_phone_number(conn, 2, '+15556667777', 2)
         # delete_phone_number(conn, 1, '+15554447876')
         # delete_client(conn,2)
-        find_client(conn, 'Mark', 'Musk', 'MarkZucker@gmail.com')
+        find_client(conn, last_name='Musk')
+
 conn.close()
 
 
